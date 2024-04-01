@@ -2,6 +2,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import exists
 from database.models.user import *
+from aiogram import types
 
 
 class Condition:
@@ -24,18 +25,21 @@ class Condition:
 
 
 class UserIsSubscribed(Condition):
-    def __init__(self, user, channel):
+    def __init__(self, user, channel, bot):
         super().__init__(user)
         self.channel = channel
+        self.bot = bot
         self.exodus = {
             True: True,
             False: True
         }
 
-    def condition(self):
-        if self.channel:  # !
+    async def condition(self):
+        user_channel_status = await self.bot.get_chat_member(chat_id=self.channel, user_id=self.user)
+        if user_channel_status.status != types.ChatMemberStatus.LEFT:
             return True
-        return False
+        else:
+            return False
 
 
 class UserHavePremium(Condition):

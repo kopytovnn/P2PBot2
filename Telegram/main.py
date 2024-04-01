@@ -18,8 +18,9 @@ from sqlalchemy.orm import Session
 from database.models.user import *
 from Conditions import *
 from messages import buttons
+import config
 
-TOKEN = "7007217288:AAFsG1hlACW1uPT1nyFQL_03xjtITNXXhKU"
+TOKEN = config.TOKEN
 
 dp = Dispatcher()
 
@@ -61,11 +62,15 @@ async def suppot(callback: types.CallbackQuery):
                 buttons.COOPERATION,
     )
 
-    chains_content = open('../chains.txt', 'rt').read()
-    if chains_content:
-        await callback.message.answer(chains_content, reply_markup=builder.as_markup())
+    if not UserIsSubscribed(user=callback.message.from_user, channel='@freep2pchains', bot=bot):
+        await callback.message.answer('Сначала подпишись на <a href="https://t.me/freep2pchains">КАНАЛ</a>')
+
     else:
-        await callback.message.answer("СВЯЗКИ НЕ НАЙДЕНЫ", reply_markup=builder.as_markup())
+        chains_content = open('../chains.txt', 'rt').read()
+        if chains_content:
+            await callback.message.answer(chains_content, reply_markup=builder.as_markup())
+        else:
+            await callback.message.answer("СВЯЗКИ НЕ НАЙДЕНЫ", reply_markup=builder.as_markup())
 
 
 @dp.callback_query(F.data == 'support_project')
@@ -92,7 +97,9 @@ async def personal_account(callback: types.CallbackQuery):
 
 async def main() -> None:
     # Initialize Bot instance with a default parse mode which will be passed to all API calls
+    global bot
     bot = Bot(TOKEN, parse_mode=ParseMode.HTML)
+
     # And the run events dispatching
     await dp.start_polling(bot)
 

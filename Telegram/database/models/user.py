@@ -1,8 +1,6 @@
 from sqlalchemy import MetaData, Table, String, Integer, Column, Text, DateTime, Boolean, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship
 from database.models.base import Base
-from base import Base
-
 
 class User(Base):
     __tablename__ = 'User'
