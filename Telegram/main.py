@@ -62,9 +62,11 @@ async def suppot(callback: types.CallbackQuery):
                 buttons.COOPERATION,
     )
 
-    if not UserIsSubscribed(user=callback.message.from_user, channel='@freep2pchains', bot=bot):
-        await callback.message.answer('Сначала подпишись на <a href="https://t.me/freep2pchains">КАНАЛ</a>')
-
+    user_channel_status = await bot.get_chat_member(chat_id='@freep2pchains', user_id=callback.message.from_user.id)
+    if user_channel_status.status == 'left':
+        environment = Environment(loader=FileSystemLoader("messages/"))
+        template = environment.get_template("Subscribe.html")
+        await callback.message.answer(template.render(channel='freep2pchains'), reply_markup=builder.as_markup())
     else:
         chains_content = open('../chains.txt', 'rt').read()
         if chains_content:
@@ -81,7 +83,7 @@ async def personal_account(callback: types.CallbackQuery):
                 buttons.COOPERATION,
     )
 
-    await callback.message.answer("Связь: @gmnjaak", reply_markup=builder.as_markup())
+    await callback.message.answer("Связь: @evgropytov", reply_markup=builder.as_markup())
 
 
 @dp.callback_query(F.data == 'cooperation')
@@ -92,7 +94,7 @@ async def personal_account(callback: types.CallbackQuery):
                 buttons.COOPERATION,
     )
 
-    await callback.message.answer("Связь: @gmnjaak", reply_markup=builder.as_markup())
+    await callback.message.answer("Связь: @evgropytov", reply_markup=builder.as_markup())
 
 
 async def main() -> None:
